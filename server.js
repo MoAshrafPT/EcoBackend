@@ -17,7 +17,7 @@ const db = mysql.createConnection({
     host:'localhost',
     user: 'root',
     password: '',
-    database: 'EcoDB'
+    database: 'ecoPopulated'
 })
 
 app.get('/', (req,res)=>{
@@ -38,6 +38,7 @@ app.get('/teams', (req,res)=>{
         return res.json(data);
     })
 })
+
 
 
 app.post('/login', (req,res)=>{
