@@ -7,6 +7,7 @@ const util = require('util');
 
 
 
+
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -38,13 +39,6 @@ app.get('/teams', (req,res)=>{
     })
 })
 
-app.get('/tasks', (req,res)=>{
-    const sql= "";
-    db.query(sql, (err,data)=>{
-        if(err) return res.json(err);
-        return res.json(data);
-    })
-})
 
 app.post('/login', (req,res)=>{
     console.log(req.body);
@@ -52,7 +46,7 @@ app.post('/login', (req,res)=>{
     const password = req.body['password'];
     
     
-    const sql = `SELECT PasswordM FROM Members WHERE Email = "${email}"`;
+    const sql = `SELECT PasswordM , nameM, Mid FROM Members WHERE Email = "${email}"`;
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
         else{
@@ -61,7 +55,8 @@ app.post('/login', (req,res)=>{
             if(password === data[0].PasswordM)
             {
                 console.log('User successfully logged in');
-                return res.json(true);
+                console.log(data[0].nameM);
+                return res.json({data:true, row:data[0].nameM,id:data[0].Mid});
             }
             else{
                 console.log("Password does not match");
@@ -109,6 +104,20 @@ app.post('/signup',async (req,res)=>{
     return res.json(err);
 }
 })
+
+app.post('/tasks', (req,res)=>{
+    const id = req.body.memberID;
+    const sql = `SELECT * FROM tasks WHERE member_id = ${id}`
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        else{
+            console.log(data);
+            return res.json(data);
+        }
+
+    })
+})
+
 
 app.listen(8081, ()=>{
     console.log("listening");
