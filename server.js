@@ -153,7 +153,7 @@ app.post('/feedback',(req,res)=>{
     //TODO: user gives feedback on a particular member
 })
 app.post('/requesttools',(req,res)=>{
-    //TODO: handle request data coming from form
+    
     const toolName = req.body.tool;
     const quantity = req.body.quantity;
     const ddl = req.body.deadline;
@@ -166,7 +166,7 @@ app.post('/requesttools',(req,res)=>{
     })
 
 })
-app.post('/discipline',(req,res)=>{         //disciplinary action against users
+app.post('/discipline',(req,res)=>{         // TODO: disciplinary action against users
 
 })
 
@@ -243,6 +243,23 @@ app.post('/signup',async (req,res)=>{
 app.post('/tasks', (req,res)=>{
     const id = req.body.memberID;
     const sql = `SELECT * FROM tasks WHERE member_id = ${id}`
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        else{
+            console.log(data);
+            return res.json(data);
+        }
+
+    })
+})
+
+app.post('/addrace',(req,res)=>{
+    const date = req.body.date;
+    const member = req.body.member;
+    const car = req.body.car;
+    const dist = req.body.distance
+    const location = req.body.location;
+    const sql = `INSERT INTO races VALUES ('${date}',${dist},${car},'${location}',${member})`
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
         else{
