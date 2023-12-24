@@ -253,6 +253,21 @@ app.post('/tasks', (req,res)=>{
     })
 })
 
+app.delete('/deleterequest', (req,res)=>{
+    console.log(req.query);
+    const sql = `DELETE FROM tool_requests WHERE memberID = ${req.query.id} AND toolname = '${req.query.name}'`
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        else{
+            console.log(data);
+            return res.json(data);
+        }
+
+    })
+  
+})
+
+
 
 
 
