@@ -4,6 +4,8 @@ const cors = require("cors");
 const axios = require("axios");
 const bodyParser = require("body-parser")
 const util = require('util');
+const { log } = require("console");
+const path = require("path");
 
 
 
@@ -24,11 +26,16 @@ app.get('/', (req,res)=>{
  return res.json("from backend");
 })
 
-app.get('/members', (req,res)=>{
-    const sql = "CALL SelectAllMembers";
+app.get('/members/:name', (req,res)=>{
+    let sql = "SELECT members.Mid,nameM, Admin_Ssn, Position,Team_Name,Major from members,member_of,teams where member_of.Mid = members.Mid AND Tid = Team_ID";
+    if(req.params.name !== 'All'){
+        const sqlExtension = ` AND Team_Name = '${req.params.name}'`;
+        sql +=sqlExtension; 
+    }
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
-        return res.json(data[0]);
+        console.log(data);
+        return res.json(data);
     })
 })
 app.get('/teams', (req,res)=>{
@@ -118,6 +125,9 @@ app.post('/tasks', (req,res)=>{
 
     })
 })
+
+
+
 
 
 app.listen(8081, ()=>{
