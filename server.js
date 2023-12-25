@@ -19,7 +19,7 @@ const db = mysql.createConnection({
     host:'localhost',
     user: 'root',
     password: '',
-    database: 'ecoPopulated'
+    database: 'ecopopulated2'
 })
 
 app.get('/', (req,res)=>{
@@ -40,6 +40,13 @@ app.get('/members/:name', (req,res)=>{
 })
 app.get('/teams', (req,res)=>{
     const sql = "SELECT * FROM Teams";
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data);
+    })
+})
+app.get('/cars', (req,res)=>{
+    const sql = "SELECT * FROM cars";
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
         return res.json(data);
