@@ -121,6 +121,24 @@ app.get('/allrequests',(req,res)=>{
     })
 })
 
+app.get('/projects/:id', (req,res)=>{
+    const id = req.params.id;
+    const sql = `SELECT Pid , PName,projects.Mid,admin_id From tasks,projects,members where tasks.member_id = members.Mid AND tasks.Project_id = projects.Pid AND members.Mid = ${id};`;
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data);
+    })
+})
+
+app.get('/taskadmin/:id',(req,res)=>{
+    const id =req.params.id;
+    const sql=`SELECT Task_Number, DescriptionT, Project_id, start_dateT, End_date,member_id,members.nameM,members.Position,members.Major FROM tasks,members WHERE members.Mid=member_id and admin_id=${id}`;
+     db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data);
+    })
+})
+
 app.patch('/updateinfo',(req,res)=>{
     
     //TODO: user can change his password, email, major
