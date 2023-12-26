@@ -19,7 +19,7 @@ const db = mysql.createConnection({
     host:'localhost',
     user: 'root',
     password: '',
-    database: 'ecopopulated2'
+    database: 'ecopopulated'
 })
 
 app.get('/', (req,res)=>{
