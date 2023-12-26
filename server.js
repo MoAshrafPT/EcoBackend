@@ -196,8 +196,24 @@ app.post('/discipline',(req,res)=>{         // TODO: disciplinary action against
 })
 
 
+app.get('/discipmember/:name', (req,res)=>{
+    let sql = "SELECT members.Mid,nameM from members,member_of,teams where member_of.Mid = members.Mid AND Tid = Team_ID";
+        const sqlExtension = ` AND Team_Name = '${req.params.name}'`;
+        sql +=sqlExtension; 
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        console.log(data);
+        return res.json(data);
+    })
+})
 
-
+app.get('/adminteams/:id', (req,res)=>{
+    const sql = `SELECT Team_Name, Team_ID FROM teams,members WHERE TA_ID = Mid AND Mid= ${req.params.id};`;
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data);
+    })
+})
 
 
 app.post('/login', (req,res)=>{
