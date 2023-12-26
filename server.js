@@ -146,33 +146,7 @@ app.get('/taskadmin/:id',(req,res)=>{
     })
 })
 
-app.patch('/updateinfo',(req,res)=>{
-    
-    //TODO: user can change his password, email, major
-    const newEmail = '';
-    const newPassword = '';
-    const newMajor = '';
-    const sql = `UPDATE members SET `
-    if(newEmail !== '')
-    {
-        sql+= `Email = ${newEmail},`
-    }
-    if(newPassword !== '')
-    {
-        sql+= `PasswordM = ${newPassword},`
-    }
-    if(newMajor !== ''){
-        sql+= `Major = ${newMajor},`
-    }
-    sql= sql.slice(0,-1);
-    sql+= `WHERE Mid = ${req.body.Mid}`;
-    db.query(sql, (err,data)=>{
-        if(err) return res.json(err);
-        return res.json(data);
-    })
 
-   
-});
 
 app.post('/feedback',(req,res)=>{
     //TODO: user gives feedback on a particular member
@@ -192,7 +166,18 @@ app.post('/requesttools',(req,res)=>{
 
 })
 app.post('/discipline',(req,res)=>{         // TODO: disciplinary action against users
+    const adminID = req.body.admin;
+    const memberID = req.body.member;
+    const reason = req.body.reason;
+    const action = req.body.action;
+    const severity = req.body.severity;
+    console.log(req.body);
 
+    const sql = ``;
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data);
+    })
 })
 
 
@@ -212,6 +197,45 @@ app.get('/adminteams/:id', (req,res)=>{
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
         return res.json(data);
+    })
+})
+
+app.get('/taskcount/:id',(req,res)=>{
+    const sql = `SELECT COUNT(*) FROM tasks where member_id = ${req.params.id}`;
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data[0]['COUNT(*)']);
+    })
+})
+
+app.get('/severitysum/:id',(req,res)=>{
+    const sql = `SELECT SUM(severity) FROM disciplinary_action where member_id = ${req.params.id}`;
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data[0]['SUM(severity)']);
+    })
+})
+app.get('/projectcount/:id',(req,res)=>{
+    const sql = `SELECT COUNT(*) FROM projects where Mid = ${req.params.id}`;
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data[0]['COUNT(*)']);
+    })
+})
+
+app.get('/totalmembers/:id',(req,res)=>{
+    const sql = `SELECT COUNT(*) FROM members where Admin_ssn = ${req.params.id}`;
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data[0]['COUNT(*)']);
+    })
+})
+
+app.get('/totalseveritiesissued/:id',(req,res)=>{
+    const sql = `SELECT COUNT(*) FROM disciplinary_action where Admin_id = ${req.params.id}`;
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data[0]['COUNT(*)']);
     })
 })
 
@@ -269,7 +293,7 @@ app.post('/signup',async (req,res)=>{
         return res.json(false);
     }
 
-    const sql = `INSERT INTO members (nameM,Admin_ssn,Position,Major,Email,PasswordM,gradyear) VALUES ('${name}',1,'${position}','${major}','${email}','${password}','${gradYear}')`;
+    const sql = `INSERT INTO members (nameM,Position,Major,Email,PasswordM,gradyear) VALUES ('${name}','${position}','${major}','${email}','${password}','${gradYear}')`;
 
     if (!inUse) {
         const insertData = await dbQueryAsync(sql);
@@ -301,6 +325,41 @@ app.post('/addrace',(req,res)=>{
     const dist = req.body.distance
     const location = req.body.location;
     const sql = `INSERT INTO races VALUES ('${date}',${dist},${car},'${location}',${member})`
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        else{
+            console.log(data);
+            return res.json(data);
+        }
+
+    })
+})
+app.patch('/changeemail/:id', (req,res)=>{
+    const sql = `UPDATE members SET Email = '${req.body.email}' WHERE Mid =${req.params.id} `
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        else{
+            console.log(data);
+            return res.json(data);
+        }
+
+    })
+})
+
+app.patch('/changepassword/:id', (req,res)=>{
+    const sql = `UPDATE members SET PasswordM = '${req.body.password}' WHERE Mid =${req.params.id} `
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        else{
+            console.log(data);
+            return res.json(data);
+        }
+
+    })
+})
+
+app.patch('/changemajor/:id', (req,res)=>{
+    const sql = `UPDATE members SET Major = '${req.body.major}' WHERE Mid =${req.params.id} `
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
         else{
