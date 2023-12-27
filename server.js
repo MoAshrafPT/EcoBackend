@@ -269,7 +269,7 @@ app.post('/signup',async (req,res)=>{
         return res.json(false);
     }
 
-    const sql = `INSERT INTO members (nameM,Admin_ssn,Position,Major,Email,PasswordM,gradyear) VALUES ('${name}',1,'${position}','${major}','${email}','${password}','${gradYear}')`;
+    const sql = `INSERT INTO members (nameM,Position,Major,Email,PasswordM,gradyear) VALUES ('${name}','${position}','${major}','${email}','${password}','${gradYear}')`;
 
     if (!inUse) {
         const insertData = await dbQueryAsync(sql);
@@ -301,6 +301,22 @@ app.post('/addrace',(req,res)=>{
     const dist = req.body.distance
     const location = req.body.location;
     const sql = `INSERT INTO races VALUES ('${date}',${dist},${car},'${location}',${member})`
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        else{
+            console.log(data);
+            return res.json(data);
+        }
+
+    })
+})
+
+app.post('/updates',(req,res)=>{
+    
+    const memberID = req.body.memberID;
+    const adminID = req.body.adminID;
+    const update = req.body.update
+    const sql = `INSERT INTO progressupdates (member_id, admin_id, theUpdate, updateDate) VALUES (${memberID}, ${adminID}, '${update}', current_timestamp());`;
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
         else{
