@@ -39,62 +39,65 @@ app.get('/members/:name', (req,res)=>{
     })
 })
 app.get('/teams', (req,res)=>{
-    const sql = "SELECT * FROM Teams";
+    const sql = "Call SelectAllTeams";
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
-        return res.json(data);
+        return res.json(data[0]);
     })
 })
 app.get('/cars', (req,res)=>{
-    const sql = "SELECT * FROM cars";
+    const sql = "Call SelectAllCars";
     db.query(sql, (err,data)=>{
+        console.log(data[0]);
         if(err) return res.json(err);
-        return res.json(data);
+        return res.json(data[0]);
     })
 })
 app.get('/tools',(req,res)=>{
-    const sql = "SELECT * FROM Tools";
+    const sql = "Call SelectAllTools";
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
-        return res.json(data);
+        console.log(data);
+        return res.json(data[0]);
     })
 })
 app.get('/sponsors', (req,res)=>{
-    const sql = "SELECT * FROM sponsors";
+    const sql = "Call SelectAllSponsors";
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
-        return res.json(data);
+        return res.json(data[0]);
     })
 })
 app.get('/incidents', (req,res)=>{
-    const sql = "SELECT * FROM race_incidents";
+    const sql = "Call SelectAllIncidents";
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
-        return res.json(data);
+        return res.json(data[0]);
     })
 })
 
 app.get('/alumni', (req,res)=>{
-    const sql = "SELECT * FROM aumini";
+    const sql = "Call SelectAllAlumni";
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
-        return res.json(data);
+        return res.json(data[0]);
     })
 })
 
 app.get('/projects', (req,res)=>{
-    const sql = "SELECT * FROM projects";
+    const sql = "Call SelectAllProjects";
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
-        return res.json(data);
+        return res.json(data[0]);
     })
 })
 
 app.get('/races', (req,res)=>{
-    const sql = "SELECT * FROM races";
+    const sql = "Call SelectAllRaces()";
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
-        return res.json(data);
+        console.log(data);
+        return res.json(data[0]);
     })
 })
 app.get('/admins' , (req,res)=>{
@@ -443,7 +446,7 @@ app.post('/addtask', (req,res)=>{
     const sdate = req.body.sdate;
     const edate = req.body.edate;
 
-    const sql = `INSERT INTO tasks (DescriptionT,member_id,admin_id,Project_id,start_dateT,End_date) VALUES ('${descp}',${mid},${aid},${pid},'${sdate}',${edate})`
+    const sql = `INSERT INTO tasks (DescriptionT,member_id,admin_id,Project_id,start_dateT,End_date) VALUES ('${descp}',${mid},${aid},${pid},'${sdate}','${edate}')`
 
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
@@ -510,6 +513,20 @@ app.patch('/changemajor/:id', (req,res)=>{
 app.delete('/deleterequest', (req,res)=>{
     console.log(req.query);
     const sql = `DELETE FROM tool_requests WHERE memberID = ${req.query.id} AND toolname = '${req.query.name}'`
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        else{
+            console.log(data);
+            return res.json(data);
+        }
+
+    })
+  
+})
+
+app.delete('/deletetask/:id', (req,res)=>{
+    console.log(req.query);
+    const sql = `DELETE from tasks WHERE Task_Number = ${req.params.id}`
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
         else{
