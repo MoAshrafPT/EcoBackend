@@ -192,6 +192,17 @@ app.get('/discipmember/:name', (req,res)=>{
     })
 })
 
+app.get('/teamless',(req,res)=>{
+    const sql = "SELECT * FROM members WHERE Admin_ssn IS NULL AND Position <> 'admin' AND Position <> 'sponsor';";
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        console.log(data);
+        return res.json(data);
+    })
+})
+
+
+
 app.get('/adminteams/:id', (req,res)=>{
     const sql = `SELECT Team_Name, Team_ID FROM teams,members WHERE TA_ID = Mid AND Mid= ${req.params.id};`;
     db.query(sql, (err,data)=>{
@@ -236,6 +247,14 @@ app.get('/totalseveritiesissued/:id',(req,res)=>{
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
         return res.json(data[0]['COUNT(*)']);
+    })
+})
+
+app.get('/adminmembers/:id', (req,res)=>{
+    const sql = `SELECT nameM, Mid from members WHERE Admin_ssn = ${req.params.id}`
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data);
     })
 })
 
@@ -334,6 +353,43 @@ app.post('/addrace',(req,res)=>{
 
     })
 })
+app.post('/addtask', (req,res)=>{
+    const descp = req.body.descp;
+    console.log(descp);
+    const mid = req.body.mid;
+    const aid = req.body.aid;
+    const pid = req.body.pid;
+    const sdate = req.body.sdate;
+    const edate = req.body.edate;
+
+    const sql = `INSERT INTO tasks (DescriptionT,member_id,admin_id,Project_id,start_dateT,End_date) VALUES ('${descp}',${mid},${aid},${pid},'${sdate}',${edate})`
+
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        else{
+            console.log(data);
+            return res.json(data);
+        }
+
+    })
+})
+
+app.post('/assignmember',async(req,res)=>{
+    const member = req.body.member;
+    const team = req.body.team;
+    const admin = req.body.admin;
+    const memberUpdate = `UPDATE members SET Admin_ssn = ${admin}`;
+    const teamInsert = `INSERT INTO member_of (Mid,Tid) VALUES (${member},${team})`
+    const dbQueryAsync = util.promisify(db.query).bind(db);
+   try{
+    await dbQueryAsync(memberUpdate);
+    await dbQueryAsync(teamInsert);
+   }
+   catch(err){
+    console.log(err);
+   }
+})
+
 app.patch('/changeemail/:id', (req,res)=>{
     const sql = `UPDATE members SET Email = '${req.body.email}' WHERE Mid =${req.params.id} `
     db.query(sql, (err,data)=>{
