@@ -25,7 +25,14 @@ const db = mysql.createConnection({
 app.get('/', (req,res)=>{
  return res.json("from backend");
 })
-
+app.get('/allmembers',(req,res)=>{
+    const sql = "Call SelectAllMembers";
+    db.query(sql,(err,data)=>{
+        if(err) return res.json(err);
+        console.log(data);
+        return res.json(data[0]);
+    })
+})
 app.get('/members/:name', (req,res)=>{
     let sql = "SELECT members.Mid,nameM, Admin_Ssn, Position,Team_Name,Major from members,member_of,teams where member_of.Mid = members.Mid AND Tid = Team_ID";
     if(req.params.name !== 'All'){
@@ -208,6 +215,15 @@ app.get('/feedbackmember/:id',(req,res)=>{
     })
     })    
 
+app.get('/citations/:id',(req,res)=>{
+    const sql =`SELECT * FROM disciplinary_action WHERE Member_id = ${req.params.id}`;
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        console.log(data);
+        return res.json(data);
+    })
+})    
+
    
 app.post('/requesttools',(req,res)=>{
     
@@ -251,11 +267,11 @@ app.get('/discipmember/:name', (req,res)=>{
 })
 
 app.get('/teamless',(req,res)=>{
-    const sql = "SELECT * FROM members WHERE Admin_ssn IS NULL AND Position <> 'admin' AND Position <> 'sponsor';";
+    const sql = "call SelectTeamless";
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
         console.log(data);
-        return res.json(data);
+        return res.json(data[0]);
     })
 })
 
@@ -353,7 +369,8 @@ app.post('/login', (req,res)=>{
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
         else{
-          
+            if(data.length ===0)
+                return res.json(false)
             
             if(password === data[0].PasswordM)
             {
