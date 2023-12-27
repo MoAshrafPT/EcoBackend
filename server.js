@@ -19,7 +19,7 @@ const db = mysql.createConnection({
     host:'localhost',
     user: 'root',
     password: '',
-    database: 'ecopopulated'
+    database: 'ecopopulated2'
 })
 
 app.get('/', (req,res)=>{
@@ -205,6 +205,22 @@ app.get('/teamless',(req,res)=>{
 
 app.get('/adminteams/:id', (req,res)=>{
     const sql = `SELECT Team_Name, Team_ID FROM teams,members WHERE TA_ID = Mid AND Mid= ${req.params.id};`;
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data);
+    })
+})
+
+app.get('/memberadmin/:id', (req,res)=>{
+    const sql = `SELECT Admin_ssn FROM members WHERE Mid= ${req.params.id};`;
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data[0]['Admin_ssn']);
+    })
+})
+
+app.get('/getupdate/:id', (req,res)=>{
+    const sql = `SELECT theUpdate, member_id FROM progressupdates WHERE admin_id = ${req.params.id};`;
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
         return res.json(data);
@@ -439,23 +455,36 @@ app.delete('/deleterequest', (req,res)=>{
     })
   
 })
-app.post('/updates',(req,res)=>{
+// app.post('/updates',(req,res)=>{
     
-    const memberID = req.body.memberID;
-    const adminID = req.body.adminID;
-    const update = req.body.update
-    const sql = `INSERT INTO progressupdates (member_id, admin_id, theUpdate, updateDate) VALUES (${memberID}, ${adminID}, '${update}', current_timestamp());`;
-    db.query(sql, (err,data)=>{
-        if(err) return res.json(err);
-        else{
-            console.log(data);
-            return res.json(data);
-        }
 
+//     console.log(req.body);
+//     const sql = `INSERT INTO progressupdates (member_id, admin_id, theUpdate, updateDate) VALUES (${memberID}, ${adminID}, '${update}', current_timestamp());`;
+//     db.query(sql, (err,data)=>{
+//         if(err) return res.json(err);
+//         else{
+//             console.log(data);
+//             return res.json(data);
+//         }
+
+//     })
+// })
+
+app.post('/updates',(req,res)=>{         // TODO: disciplinary action against users
+    const adminID = req.body.admin;
+    const memberID = req.body.member;
+    const update = req.body.reason;
+    console.log(req.body);
+
+    const sql = `INSERT INTO progressupdates (member_id, admin_id, theUpdate, updateDate) VALUES (${memberID}, ${adminID}, '${update}', current_timestamp());`;
+     
+    db.query(sql, (err,data)=>{
+         
+        if(err) return res.json(err);
+        return res.json(data)
+        
     })
 })
-
-
 
 
 
