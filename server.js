@@ -19,7 +19,7 @@ const db = mysql.createConnection({
     host:'localhost',
     user: 'root',
     password: '',
-    database: 'ecopopulated2'
+    database: 'ecopopulated'
 })
 
 app.get('/', (req,res)=>{
@@ -143,14 +143,69 @@ app.get('/taskadmin/:id',(req,res)=>{
      db.query(sql, (err,data)=>{
         if(err) return res.json(err);
         return res.json(data);
-    })
+   })
 })
 
+app.get('/changeposition/:id',(req,res)=>{
+    const id =req.params.id;
+    const sql=`SELECT nameM,Mid from members WHERE Admin_ssn=${id}`
+     db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data);
+    })
+})
 
+app.get('/awards',(req,res)=>{
+    const sql="SELECT * FROM awards";
+    db.query(sql, (err,data)=>{
+            if(err) return res.json(err);
+            return res.json(data);
+     })
+    })
+
+app.patch('/change',(req,res)=>{
+    const sql = `UPDATE members set Position='admin',Admin_ssn=NULL where nameM='${req.query.name}' and Admin_ssn=${req.query.id}`
+    console.log(sql);
+    console.log(req.query);
+    db.query(sql, (err,data)=>{
+        if(err) 
+        return res.json(err);
+        else{
+            console.log(data.Mid);
+            console.log(data);
+            return res.json(data);
+   }
+})
+})
 
 app.post('/feedback',(req,res)=>{
-    //TODO: user gives feedback on a particular member
-})
+    const sql=`INSERT INTO feedback (Feedback_Content,T_ID) VALUES (${req.query.name},${req.query.id})`
+   
+   console.log(req.query.id);
+   db.query(sql, (err,data)=>{
+           if(err) return res.json(err);
+           return res.json(data);
+    })
+   })
+
+app.get('/feedbackadmin/:id',(req,res)=>{
+    console.log(req.params.id);
+    const sql=`SELECT Feedback_Content,FeedBack_Date from feedback,teams where teams.Team_ID=T_ID and teams.TA_ID=${req.params.id}`
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data);
+    })
+    })
+
+app.get('/feedbackmember/:id',(req,res)=>{
+        const sql=`SELECT Feedback_Content,FeedBack_Date from feedback,teams,member_of where teams.Team_ID=T_ID and member_of.Tid=teams.TA_ID and member_of.Mid=${req.params.id}`
+        db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data);
+    })
+    })    
+
+   
 app.post('/requesttools',(req,res)=>{
     
     const toolName = req.body.tool;
@@ -273,6 +328,16 @@ app.get('/adminmembers/:id', (req,res)=>{
         return res.json(data);
     })
 })
+app.get('/carparts',(req,res)=>{
+    const sql = "SELECT * FROM car_parts";
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data);
+    })
+
+})
+
+
 
 
 app.post('/login', (req,res)=>{
@@ -394,7 +459,7 @@ app.post('/assignmember',async(req,res)=>{
     const member = req.body.member;
     const team = req.body.team;
     const admin = req.body.admin;
-    const memberUpdate = `UPDATE members SET Admin_ssn = ${admin}`;
+    const memberUpdate = `UPDATE members SET Admin_ssn = ${admin} WHERE Mid = ${member}`;
     const teamInsert = `INSERT INTO member_of (Mid,Tid) VALUES (${member},${team})`
     const dbQueryAsync = util.promisify(db.query).bind(db);
    try{
@@ -455,25 +520,12 @@ app.delete('/deleterequest', (req,res)=>{
     })
   
 })
-// app.post('/updates',(req,res)=>{
-    
 
-//     console.log(req.body);
-//     const sql = `INSERT INTO progressupdates (member_id, admin_id, theUpdate, updateDate) VALUES (${memberID}, ${adminID}, '${update}', current_timestamp());`;
-//     db.query(sql, (err,data)=>{
-//         if(err) return res.json(err);
-//         else{
-//             console.log(data);
-//             return res.json(data);
-//         }
 
-//     })
-// })
-
-app.post('/updates',(req,res)=>{         // TODO: disciplinary action against users
+app.post('/updates',(req,res)=>{         
     const adminID = req.body.admin;
     const memberID = req.body.member;
-    const update = req.body.reason;
+    const update = req.body.update;
     console.log(req.body);
 
     const sql = `INSERT INTO progressupdates (member_id, admin_id, theUpdate, updateDate) VALUES (${memberID}, ${adminID}, '${update}', current_timestamp());`;
