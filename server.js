@@ -173,7 +173,7 @@ app.post('/discipline',(req,res)=>{         // TODO: disciplinary action against
     const severity = req.body.severity;
     console.log(req.body);
 
-    const sql = ``;
+    const sql = `INSERT INTO disciplinary_action (Admin_id, Member_id, Reason, Action, severity, reportDate) VALUES (${adminID}, ${memberID}, '${reason} ', '${action}', ${severity}, current_timestamp());`;
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
         return res.json(data);
@@ -439,7 +439,21 @@ app.delete('/deleterequest', (req,res)=>{
     })
   
 })
+app.post('/updates',(req,res)=>{
+    
+    const memberID = req.body.memberID;
+    const adminID = req.body.adminID;
+    const update = req.body.update
+    const sql = `INSERT INTO progressupdates (member_id, admin_id, theUpdate, updateDate) VALUES (${memberID}, ${adminID}, '${update}', current_timestamp());`;
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        else{
+            console.log(data);
+            return res.json(data);
+        }
 
+    })
+})
 
 
 
