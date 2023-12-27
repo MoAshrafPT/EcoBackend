@@ -275,7 +275,49 @@ app.get('/teamless',(req,res)=>{
     })
 })
 
+app.get('/getteamcounts', (req,res)=>{
+    const sql = "SELECT COUNT(*),teams.Team_ID FROM member_of,teams where member_of.Tid = teams.Team_ID GROUP BY teams.Team_ID;";
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        console.log(data);
+        return res.json(data);
+    })
+})
 
+app.get('/getavgpartprice',(req,res)=>{
+    const sql = `SELECT AVG(Price),Part_Name from car_parts GROUP BY Part_Name;`;
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        console.log(data);
+        return res.json(data);
+    })
+})
+
+app.get('/getcontributions',(req,res)=>{
+    const sql = "SELECT Fund_amount,nameF from funds ORDER BY Fund_amount DESC"
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        console.log(data);
+        return res.json(data);
+    })
+})
+app.get('/gettasksperproject',(req,res)=>{
+    const sql = "Call TaskProjectDistribution"
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        console.log(data);
+        return res.json(data[0]);
+    })
+})
+
+app.get('/getmaxawards',(req,res)=>{
+    const sql = "SELECT Max(Prize) from awards;"
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        console.log(data);
+        return res.json(data);
+    })
+})
 
 app.get('/adminteams/:id', (req,res)=>{
     const sql = `SELECT Team_Name, Team_ID FROM teams,members WHERE TA_ID = Mid AND Mid= ${req.params.id};`;
