@@ -123,10 +123,10 @@ app.get('/funds',(req,res)=>{
     })
 })
 app.get('/myrequests/:id',(req,res)=>{
-    const sql = `SELECT * FROM tool_requests WHERE memberID = ${req.params.id}`;
+    const sql = `CALL GetMyRequests(${req.params.id})`;
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
-        return res.json(data);
+        return res.json(data[0]);
     })
 })
 
@@ -140,10 +140,10 @@ app.get('/allrequests',(req,res)=>{
 
 app.get('/projects/:id', (req,res)=>{
     const id = req.params.id;
-    const sql = `SELECT Pid , PName,projects.Mid,admin_id From tasks,projects,members where tasks.member_id = members.Mid AND tasks.Project_id = projects.Pid AND members.Mid = ${id};`;
+    const sql = `call GetMyProjects(${id})`;
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
-        return res.json(data);
+        return res.json(data[0]);
     })
 })
 
@@ -173,19 +173,55 @@ app.get('/awards',(req,res)=>{
      })
     })
 
-app.patch('/change',(req,res)=>{
+// app.patch('/change',(req,res)=>{
+//     const sql = `UPDATE members set Position='admin',Admin_ssn=NULL where nameM='${req.query.name}' and Admin_ssn=${req.query.id}`
+//     console.log(sql);
+//     console.log(req.query);
+//     db.query(sql, (err,data)=>{
+//         if(err) 
+//         return res.json(err);
+//         else{
+//             console.log(data.Mid);
+//             console.log(data);
+//             return res.json(data);
+//    }
+// })
+// })
+
+app.patch('/change',async(req,res)=>{
+    const dbQueryAsync = util.promisify(db.query).bind(db);
     const sql = `UPDATE members set Position='admin',Admin_ssn=NULL where nameM='${req.query.name}' and Admin_ssn=${req.query.id}`
+    const sql3 = `SELECT Mid FROM members WHERE nameM = '${req.query.name}'`
+    try{
+       const response = await dbQueryAsync(sql3);
+       console.log(response[0]['Mid']);
+       newAdmin = response[0]['Mid']
+    }catch(err)
+    {
+        console.log(err);
+    }
+    const sql2 = `INSERT INTO administrators VALUES (${newAdmin},0)`
+    
     console.log(sql);
-    console.log(req.query);
-    db.query(sql, (err,data)=>{
-        if(err) 
-        return res.json(err);
-        else{
-            console.log(data.Mid);
-            console.log(data);
-            return res.json(data);
-   }
-})
+    try{
+        await dbQueryAsync(sql);
+        
+        await dbQueryAsync(sql2)
+    }catch(err)
+    {
+        console.log(err);
+    }
+    
+
+//     db.query(sql, (err,data)=>{
+//         if(err) 
+//         return res.json(err);
+//         else{
+//             console.log(data.Mid);
+//             console.log(data);
+//             return res.json(data);
+//    }
+// })
 })
 
 app.post('/feedback',(req,res)=>{
@@ -200,27 +236,27 @@ app.post('/feedback',(req,res)=>{
 
 app.get('/feedbackadmin/:id',(req,res)=>{
     console.log(req.params.id);
-    const sql=`SELECT Feedback_Content,FeedBack_Date from feedback,teams where teams.Team_ID=T_ID and teams.TA_ID=${req.params.id}`
+    const sql=`Call FeedbackAdmin(${req.params.id})`
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
-        return res.json(data);
+        return res.json(data[0]);
     })
     })
 
 app.get('/feedbackmember/:id',(req,res)=>{
-        const sql=`SELECT Feedback_Content,FeedBack_Date from feedback,teams,member_of where teams.Team_ID=T_ID and member_of.Tid=teams.TA_ID and member_of.Mid=${req.params.id}`
+        const sql=`Call FeedbackMember(${req.params.id})`
         db.query(sql, (err,data)=>{
         if(err) return res.json(err);
-        return res.json(data);
+        return res.json(data[0]);
     })
     })    
 
 app.get('/citations/:id',(req,res)=>{
-    const sql =`SELECT * FROM disciplinary_action WHERE Member_id = ${req.params.id}`;
+    const sql =`Call GetCitations(${req.params.id})`;
     db.query(sql, (err,data)=>{
         if(err) return res.json(err);
         console.log(data);
-        return res.json(data);
+        return res.json(data[0]);
     })
 })    
 
