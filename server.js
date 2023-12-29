@@ -433,6 +433,13 @@ app.get('/carparts',(req,res)=>{
     })
 
 })
+app.get('/totalprojects', (req,res)=>{
+    const sql = "SELECT Pid, PName FROM projects";
+    db.query(sql, (err,data)=>{
+        if(err) return res.json(err);
+        return res.json(data);
+    })
+})
 
 
 
